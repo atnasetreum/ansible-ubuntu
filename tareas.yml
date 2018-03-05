@@ -1,0 +1,46 @@
+---
+
+- hosts  : migracion
+  become : true
+  remote_user: triplei
+  tasks  :
+    - name: Estatus del Servidor
+      ping:
+    - name: Ejecutando update en el servidor
+      apt : update_cache=yes
+    - name: Ejecutando upgrade en el servidor
+      apt : upgrade=dist
+    - name: Instalando NGINX
+      apt: pkg=nginx-full state=present update_cache=true
+    - name: Instalando PHP 7 y sus complementos
+      apt: pkg=php state=present update_cache=true
+      with_items:
+        - php-pear
+        - php7.0-dev
+        - php7.0-zip
+        - php7.0-curl
+        - php7.0-gd
+        - php7.0-mysql
+        - php7.0-mcrypt
+        - php7.0-xml
+    - name: Instalando software-properties-common
+      apt: pkg=software-properties-common state=present update_cache=true
+    - name: Agregando llave
+      apt_key: keyserver=keyserver.ubuntu.com:80id=0xF1656F24C74CD1D8
+    - name: Agregando repository
+      apt_repository: repo='deb [arch=amd64,i386,ppc64el] http://mirror.nodesdirect.com/mariadb/repo/10.2/ubuntu xenial main' state=present
+    - name: Ejecutando update en el servidor
+      apt : update_cache=yes
+    - name: Install MariaDB Server
+      apt: name=mariadb-server state=latest update_cache=yes
+    # - name: Instalando filezilla
+      # apt: pkg=filezilla state=present update_cache=true
+      # notify:
+        # - "Reiniciar NGINX"
+    - name: Instalando screenfetch
+      apt: pkg=screenfetch state=present update_cache=true
+    - name: Info
+      shell: screenfetch
+  handlers:
+    - name: Reiniciar NGINX
+      service: name=nginx state=restarted
