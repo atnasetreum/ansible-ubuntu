@@ -1,0 +1,55 @@
+Primeros paso con ubuntu 16
+
+Al instalar ubuntu 16 seleciona
+ - Descargar actualizaciones al instalar Ubuntu
+ - Instalar software de terceros
+
+En tipo de instalacion
+ - Mas opciones
+ - Se recomienda separar el area de intercambio, home y el root en particiones por separado, para que el sistema operativo sea más duradero y seguro frente a actualizaciones.
+
+Una vez formateado el equipo
+
+Seleccionar el repositorio más rápido
+- Entrar a la Configuración del sistema
+- Una vez que abra la ventana, seleccionamos el icono que dice “Software y Actualizaciones”, luego daremos click en la opción “Descargar desde: ” y seleccionaremos la opción que dice “Otros”.
+- Al seleccionar la opción otros, se abrirá una pantalla con todas las opciones donde podemos seleccionar los repositorios más rápidos, para ello hacemos click en el botón que pone “Seleccionar el mejor servidor”.
+- Al terminar la prueba, solo haremos click en el botón “seleccionar servidor” y listo.
+
+Editar los sudoers para que solicite la contraseña cada vez que un comando sudo se va a ejecutar
+- sudo nano /etc/sudoers
+
+Agregamos el usuario actual
+triplei ALL=NOPASSWD: ALL
+
+Ejecutar los siguientes comandos en el server
+sudo apt-get update && sudo apt-get upgrade && sudo apt-get install openssh-server && sudo ssh-keygen -t rsa
+
+/**** Cliente *****/
+        Mandamos la llave al server ubuntu
+        -- ssh-copy-id triplei@192.168.14.71 && ssh-add
+
+        Verificamos la conexion ssh
+        -- ssh triplei@192.168.14.71
+
+
+        Ansible
+        Agregar /etc/apt/sources.list:
+        deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main
+        -- sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367 && sudo apt-get update && sudo apt-get install ansible
+
+        saber la version
+        -- ansible --version
+        2.6.0
+
+        Agregamos al inventario de hosts la ip del server, borrar todo el contenido del archivo
+        -- sudo subl cd /etc/ansible/hosts
+        [migracion]
+        192.168.14.92 ansible_user=triplei
+
+        Verificamos la conexion
+        -- ansible migracion -m ping
+
+        En la carpeta de ansible-ubuntu ejecutamos el siguiente comando
+        -- ansible-playbook tareas.yml
+/**** Cliente *****/
