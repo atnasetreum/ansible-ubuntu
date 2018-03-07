@@ -1,9 +1,13 @@
 ---
 - hosts: migracion
-  become: yes
+  become: true
   tasks:
-    - name: Install apt-get packages
-      apt: name={{ item }} update-cache=yes state=present cache_valid_time=3600
+    - name: Update
+      apt : update_cache=yes
+    - name: Upgrade
+      apt : upgrade=dist
+    - name: Instalando paquetes
+      apt: name={{ item }} update-cache=yes state=present
       with_items:
         - python-setuptools
         - python3-dev
@@ -11,11 +15,81 @@
         - python-virtualenv
         - nginx-full
         - mercurial
-
-    - name: Install pip
+        - python-mysqldb
+        - git
+        - chromium-browser
+    - name: pip
       easy_install:
           name=pip
-
-    - name: Upgrade pip
+    - name: Actualizando pip
       command: pip install --upgrade pip
+    - name: PHP 7
+      apt: pkg=php state=present update_cache=true
+      with_items:
+        - php7.0-pear
+        - php7.0-dev
+        - php7.0-zip
+        - php7.0-curl
+        - php7.0-gd
+        - php7.0-mysql
+        - php7.0-mcrypt
+        - php7.0-xml
+        - php7.0-fpm
+        - php7.0-gettext
+        - php7.0-mbstring
+        - php7.0-xmlrpc
+    - name: Agregando archivo de virtual host
+      action: template src=team.com dest=/etc/nginx/sites-available/team.com
+    - name: Agrega a /etc/hosts la ip local
+      shell: echo "192.168.14.90 team.com" >> /etc/hosts
+    - name: Crear enlace simbólico a team.com
+      file: src=/etc/nginx/sites-available/team.com dest=/etc/nginx/sites-enabled/team.com state=link
+      notify:
+        - Reiniciando NGINX
+    - name: Repositorio MariaDB
+      apt_repository: repo='deb http://ftp.igh.cnrs.fr/pub/mariadb/repo/10.0/ubuntu trusty main' state=present
+    - name: Clave del repositorio MariaDB al sistema
+      apt_key: keyserver=keyserver.ubuntu.com id=0xcbcb082a1bb943db
+    - name: Instalando MariaDB
+      apt: name={{ item }} update-cache=yes state=present cache_valid_time=0
+      with_items:
+        - mariadb-server
+    - name: Configuración MariaDB para conexión desde cualquier IP
+      lineinfile: dest=/etc/mysql/my.cnf regexp="^bind-address" line="bind-address=0.0.0.0"
+    - name: Creando usuario team_dev
+      mysql_user: name=team_dev host="%" password=team_dev priv=*.*:ALL state=present
+    - name: Creando usuario root
+      mysql_user: name=root host="%" password=team_dev priv=*.*:ALL state=present
+    - name: Creando usuario iintegrausr
+      mysql_user: name=iintegrausr host="%" password=team_dev priv=*.*:ALL state=present
+      notify:
+        - Actualiza Privilegios MariaDB
+    - name:  Creando base de datos db_team
+      mysql_db:
+        name: db_team
+        state: present
+    - name: Copiando DB
+      copy:
+        src: db_team.sql
+        dest: /tmp
+    - name: Restaurando DB
+      mysql_db:
+        name: db_team
+        state: import
+        target: /tmp/db_team.sql
+    #- name: Clonando Repositorio con la rama de migracion
+      #shell: hg clone 'https://eduardodominguez:bitbucket1020101352A@bitbucket.org/integramx/webteam_v1' /home/triplei/web_team -b migracion-v2
+    #- name: Cambiando permisos
+      #file: path=/home/triplei/web_team owner=triplei group=triplei mode=0775 state=directory recurse=yes
+    #- name: Update
+      #apt : update_cache=yes
+    #- name: Upgrade
+      #apt : upgrade=dist
 
+
+
+  handlers:
+    - name: Reiniciando NGINX
+      service: name=nginx state=restarted
+    - name: Actualiza Privilegios MariaDB
+      shell: mysql -u team_dev --password=team_dev -e "FLUSH PRIVILEGES;"
