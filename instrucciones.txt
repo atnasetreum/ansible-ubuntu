@@ -16,21 +16,21 @@ Seleccionar el repositorio más rápido
 - Al seleccionar la opción otros, se abrirá una pantalla con todas las opciones donde podemos seleccionar los repositorios más rápidos, para ello hacemos click en el botón que pone “Seleccionar el mejor servidor”.
 - Al terminar la prueba, solo haremos click en el botón “seleccionar servidor” y listo.
 
-Editar los sudoers para que solicite la contraseña cada vez que un comando sudo se va a ejecutar
+Editar los sudoers para que no solicite la contraseña cada vez que ejecute sudo
 - sudo nano /etc/sudoers
 
 Agregamos el usuario actual
-triplei ALL=NOPASSWD: ALL
+triplei ALL=(ALL:ALL) NOPASSWD:ALL
 
 Ejecutar los siguientes comandos en el server
 sudo apt-get update && sudo apt-get upgrade && sudo apt-get install openssh-server && sudo ssh-keygen -t rsa
 
 /**** Cliente *****/
         Mandamos la llave al server ubuntu
-        -- ssh-copy-id triplei@192.168.14.71 && ssh-add
+        -- ssh-copy-id triplei@192.168.19.164 && ssh-add
 
         Verificamos la conexion ssh
-        -- ssh triplei@192.168.14.71
+        -- ssh triplei@192.168.19.164
 
 
         Ansible
