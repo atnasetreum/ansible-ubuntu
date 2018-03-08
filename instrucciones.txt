@@ -27,7 +27,7 @@ sudo apt-get update && sudo apt-get upgrade && sudo apt-get install openssh-serv
 
 /**** Cliente *****/
         Mandamos la llave al server ubuntu
-        -- ssh-copy-id triplei@192.168.19.164 && ssh-add
+        -- ssh-copy-id triplei@192.168.14.93 && ssh-add
 
         Verificamos la conexion ssh
         -- ssh triplei@192.168.19.164

@@ -43,7 +43,7 @@
     - name: Agregando archivo de virtual host
       action: template src=team.com dest=/etc/nginx/sites-available/team.com
     - name: Agrega a /etc/hosts la ip local
-      shell: echo "192.168.14.83 team.com" >> /etc/hosts
+      shell: echo "192.168.14.93 team.com" >> /etc/hosts
     - name: Crear enlace simbólico a team.com
       file: src=/etc/nginx/sites-available/team.com dest=/etc/nginx/sites-enabled/team.com state=link
       notify:
@@ -88,7 +88,7 @@
         state: import
         target: /tmp/db_team.sql
     - name: Clonando Repositorio con la rama de migracion
-      shell: hg clone 'https://eduardodominguez:bitbucket1020101352A@bitbucket.org/integramx/webteam_v1' /home/triplei/web_team -b migracion-v2
+      shell: hg clone 'https://eduardodominguez:paass@bitbucket.org/integramx/webteam_v1' /home/triplei/web_team -b migracion-v2
     - name: Cambiando permisos
       file: path=/home/triplei/web_team owner=triplei group=triplei mode=0775 state=directory recurse=yes
     - name: Update
