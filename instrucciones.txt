@@ -27,10 +27,10 @@ sudo apt-get update && sudo apt-get upgrade && sudo apt-get install openssh-serv
 
 /**** Cliente *****/
         Mandamos la llave al server ubuntu
-        -- ssh-copy-id triplei@192.168.14.93 && ssh-add
+        -- ssh-copy-id triplei@192.168.14.83 && ssh-add
 
         Verificamos la conexion ssh
-        -- ssh triplei@192.168.19.164
+        -- ssh triplei@192.168.14.83
 
 
         Ansible
@@ -43,7 +43,7 @@ sudo apt-get update && sudo apt-get upgrade && sudo apt-get install openssh-serv
         2.6.0
 
         Agregamos al inventario de hosts la ip del server, borrar todo el contenido del archivo
-        -- sudo subl cd /etc/ansible/hosts
+        -- sudo subl /etc/ansible/hosts
         [migracion]
         192.168.14.92 ansible_user=triplei
 

@@ -20,30 +20,31 @@
         - chromium-browser
         - htop
         - software-properties-common
+        - php
     - name: pip
       easy_install:
           name=pip
     - name: Actualizando pip
       command: pip install --upgrade pip
-    - name: PHP 7
-      apt: pkg=php state=present update_cache=true
+    - name: Complementos de PHP
+      apt: pkg={{ item }} state=present update_cache=true
       with_items:
-        - php7.0-pear
-        - php7.0-dev
-        - php7.0-zip
-        - php7.0-curl
-        - php7.0-gd
-        - php7.0-mysql
-        - php7.0-mcrypt
-        - php7.0-xml
-        - php7.0-fpm
-        - php7.0-gettext
-        - php7.0-mbstring
-        - php7.0-xmlrpc
+        - php-pear
+        - php-dev
+        - php-zip
+        - php-curl
+        - php-gd
+        - php-mysql
+        - php-mcrypt
+        - php-xml
+        - php-fpm
+        - php-gettext
+        - php-mbstring
+        - php-xmlrpc
     - name: Agregando archivo de virtual host
       action: template src=team.com dest=/etc/nginx/sites-available/team.com
     - name: Agrega a /etc/hosts la ip local
-      shell: echo "192.168.14.93 team.com" >> /etc/hosts
+      shell: echo "192.168.14.83 team.com" >> /etc/hosts
     - name: Crear enlace simbólico a team.com
       file: src=/etc/nginx/sites-available/team.com dest=/etc/nginx/sites-enabled/team.com state=link
       notify:
@@ -68,27 +69,27 @@
       mysql_user: name=iintegrausr host="%" password=team_dev priv=*.*:ALL state=present
       notify:
         - Actualiza Privilegios MariaDB
-    - name:  Creando base de datos db_team
-      mysql_db:
-        name: db_team
-        state: present
-    - name: Copiando DB
-      copy:
-        src: db_team.sql
-        dest: /tmp
-    - name: "Preparando la importacion"
-      shell: sed -i '1s/^/[mysqld]\n/' /etc/mysql/my.cnf
-      args:
-        warn: false
-    - name: Reiniciando MariaDB
-      service: name=mysql state=restarted
-    - name: Restaurando Base de Datos
-      mysql_db:
-        name: db_team
-        state: import
-        target: /tmp/db_team.sql
+    #- name:  Creando base de datos db_team
+      #mysql_db:
+        #name: db_team
+        #state: present
+    #- name: Copiando DB
+      #copy:
+        #src: db_team.sql
+        #dest: /tmp
+    #- name: "Preparando la importacion"
+      #shell: sed -i '1s/^/[mysqld]\n/' /etc/mysql/my.cnf
+      #args:
+        #warn: false
+    #- name: Reiniciando MariaDB
+      #service: name=mysql state=restarted
+    #- name: Restaurando Base de Datos
+      #mysql_db:
+        #name: db_team
+        #state: import
+        #target: /tmp/db_team.sql
     - name: Clonando Repositorio con la rama de migracion
-      shell: hg clone 'https://eduardodominguez:paass@bitbucket.org/integramx/webteam_v1' /home/triplei/web_team -b migracion-v2
+      shell: hg clone 'https://eduardodominguez:passwodrd@bitbucket.org/integramx/webteam_v1' /home/triplei/web_team -b migracion-v2
     - name: Cambiando permisos
       file: path=/home/triplei/web_team owner=triplei group=triplei mode=0775 state=directory recurse=yes
     - name: Update
