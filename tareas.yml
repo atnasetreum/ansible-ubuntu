@@ -77,10 +77,21 @@
       #copy:
         #src: db_team.sql
         #dest: /tmp
-    #- name: "Preparando la importacion"
-      #shell: sed -i '1s/^/[mysqld]\n/' /etc/mysql/my.cnf
-      #args:
-        #warn: false
+    - name: "Eliminando Sesitive Case"
+      shell: sed -i '1s/^/lower_case_table_names = 1\n/' /etc/mysql/my.cnf
+      args:
+        warn: false
+    - name: "Configurando sql-mode"
+      shell: sed -i '1s/^/sql-mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"\n/' /etc/mysql/my.cnf
+      args:
+        warn: false
+    - name: "Configurando mysqld"
+      shell: sed -i '1s/^/[mysqld]\n/' /etc/mysql/my.cnf
+      args:
+        warn: false
+
+
+
     #- name: Reiniciando MariaDB
       #service: name=mysql state=restarted
     #- name: Restaurando Base de Datos
@@ -89,7 +100,7 @@
         #state: import
         #target: /tmp/db_team.sql
     - name: Clonando Repositorio con la rama de migracion
-      shell: hg clone 'https://eduardodominguez:passwodrd@bitbucket.org/integramx/webteam_v1' /home/triplei/web_team -b migracion-v2
+      shell: hg clone 'https://eduardodominguez:passs@bitbucket.org/integramx/webteam_v1' /home/triplei/web_team -b migracion-v2
     - name: Cambiando permisos
       file: path=/home/triplei/web_team owner=triplei group=triplei mode=0775 state=directory recurse=yes
     - name: Update
